@@ -1,9 +1,9 @@
 #+TITLE: st - simple terminal
 
 * Introduction
-This is my personnal build of [[*st*][https://st.suckless.org/]],
+This is my personnal build of [[https://st.suckless.org/][*st*]],
 a simple terminal emulator for X which sucks less. I've applied some
-patches, added some compile flags and fixed the code accordingly.
+patches, added some compilation flags and fixed the code accordingly.
 
 * Depedencies
 - A C compiler
@@ -14,9 +14,9 @@ patches, added some compile flags and fixed the code accordingly.
 To install this build, run these commands:
 
 #+BEGIN_SRC shell
-$ git clone git://jozanleclerc.xyz/jozan/st.git
-$ cd st
-$ make
+user$ git clone git://jozanleclerc.xyz/jozan/st.git
+user$ cd st
+user$ make
 # make install clean
 #+END_SRC
 
@@ -26,7 +26,7 @@ variable in ~config.mk~.
 
 * Applied patches
 You can find a list of patches and check what those I've applied are
-doing on *st*'s [[patches][https://st.suckless.org/patches/]] page.
+doing on *st*'s [[https://st.suckless.org/patches/][patches]] page.
 
 Here is my list:
 - bold is not bright
@@ -40,7 +40,7 @@ Most settings are done by editing ~config.h~ and recompiling.
 
 ** Fonts
 The default font is part of the
-[[Nerd Fonts][https://github.com/ryanoasis/nerd-fonts]] collection but can
+[[https://github.com/ryanoasis/nerd-fonts][Nerd Fonts]] collection but can
 be changed in ~config.h:19~
 
 ** Colors
