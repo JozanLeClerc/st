@@ -1,0 +1,11 @@
+#+TITLE: st - simple terminal
+
+* Introduction
+This is my personnal build of [[st][https://st.suckless.org/]],
+a simple terminal emulator for X which sucks less. I've applied some
+patches, added some compile flags and changed the code accordingly.
+
+* Installation
+To in
+#+BEGIN_SRC shell
+

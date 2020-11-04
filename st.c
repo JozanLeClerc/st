@@ -841,8 +841,10 @@ ttyread(void)
 	switch (ret) {
 	case 0:
 		exit(0);
+		break;
 	case -1:
 		die("couldn't read from shell: %s\n", strerror(errno));
+		break;
 	default:
 		buflen += ret;
 		written = twrite(buf, buflen, 0);
@@ -851,7 +853,9 @@ ttyread(void)
 		if (buflen > 0)
 			memmove(buf, buf + written, buflen);
 		return ret;
+		break;
 	}
+	return ret;
 }
 
 void
@@ -2380,7 +2384,7 @@ tputc(Rune u)
 {
 	char c[UTF_SIZ];
 	int control;
-	int width, len;
+	int width = 0, len;
 	Glyph *gp;
 
 	control = ISCONTROL(u);
@@ -2838,13 +2842,16 @@ trt_kbdselect(KeySym ksym, char *buf, int len)
 		case XK_Escape :
 			if ( !in_use )  break;
 			selclear();
+			break;
 		case XK_Return :
 			set_notifmode(4, ksym);
 			term.c.x = cu.x, term.c.y = cu.y;
 			select_or_drawcursor(selectsearch_mode = 0, type);
 			in_use = quant = 0;
 			return MODE_KBDSELECT;
+			break;
 		case XK_n :
+			break;
 		case XK_N :
 			if ( ptarget )
 				search(selectsearch_mode, &target[0], ptarget, (ksym == XK_n) ? -1 : 1, type, &cu);
@@ -2877,6 +2884,7 @@ trt_kbdselect(KeySym ksym, char *buf, int len)
 		case XK_asterisk :
 		case XK_KP_Multiply :
 			term.c.x = term.col >> 1;
+			break;
 		case XK_underscore :
 			term.c.y = cu.y >> 1;
 			select_or_drawcursor(selectsearch_mode, type);
