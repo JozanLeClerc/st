@@ -14,9 +14,9 @@ patches, added some compilation flags and fixed the code accordingly.
 To install this build, run these commands:
 
 #+BEGIN_SRC shell
-user$ git clone git://jozanleclerc.xyz/jozan/st.git
-user$ cd st
-user$ make
+$ git clone git://jozanleclerc.xyz/jozan/st.git
+$ cd st
+$ make
 # make install clean
 #+END_SRC
 
