@@ -1259,7 +1259,6 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
 	XRenderColor colfg, colbg;
 	XRectangle r;
 
-	(void)temp;
 	/* Fallback on color display for attributes not supported by the font */
 	if (base.mode & ATTR_ITALIC && base.mode & ATTR_BOLD) {
 		if (dc.ibfont.badslant || dc.ibfont.badweight)
@@ -1327,9 +1326,9 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
 	}
 
 	if (base.mode & ATTR_REVERSE) {
-		bg = &dc.col[selectionbg];
-		if (!ignoreselfg)
-			fg = &dc.col[selectionfg];
+		temp = fg;
+		fg = bg;
+		bg = temp;
 	}
 
 	if (base.mode & ATTR_BLINK && win.mode & MODE_BLINK)

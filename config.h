@@ -37,7 +37,7 @@ char *stty_args = "stty raw pass8 nl -echo -iexten -cstopb 38400";
 char *vtiden = "\033[?6c";
 
 /* Kerning / character bounding-box multipliers */
-float cwscale = 0.8;
+float cwscale = 0.85;
 float chscale = 1.0;
 
 /*
@@ -131,10 +131,9 @@ const char *colorname[] = {
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#1d2021", /* 256: bg */
-	"#ebdbb2", /* 257: fg */
+	"#ebdbb2", /* 256: fg */
+	"#1d2021", /* 257: bg */
 	"#d79921", /* 258: cursor */
-	"#32302f", /* 259: selection color */
 };
 
 
@@ -142,15 +141,10 @@ const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
-unsigned int defaultfg = 257;
-unsigned int defaultbg = 256;
+unsigned int defaultfg = 256;
+unsigned int defaultbg = 257;
 unsigned int defaultcs = 258;
-unsigned int defaultrcs = 258;
-unsigned int selectionbg = 259;
-unsigned int selectionfg = 257;
-/* If 0 use selectionfg as foreground in order to have a uniform foreground-color */
-/* Else if 1 keep original foreground-color of each cell => more colors :) */
-int ignoreselfg = 1;
+unsigned int defaultrcs = 257;
 
 /*
  * Default shape of cursor
