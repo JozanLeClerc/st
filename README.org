@@ -29,11 +29,11 @@ You can find a list of patches and check what those I've applied are
 doing on *st*'s [[https://st.suckless.org/patches/][patches]] page.
 
 Here is my list:
-- bold is not bright
-- hidecursor
-- keyboard select
-- scrollback
-- selectioncolors
+- /bold is not bright/
+- /hidecursor/
+- /keyboard select/
+- /scrollback/
+- /selectioncolors/
 
 * Settings
 Most settings are done by editing ~config.h~ and recompiling.
