@@ -16,7 +16,7 @@
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  * Remember to remove cwscale if you change font
  */
-char *font = "DejaVuSansMono Nerd Font:pixelsize=15:antialias=true:autohint=true:";
+char *font = "DejaVuSansMono Nerd Font:pixelsize=14:antialias=true:autohint=true:";
 /* char *font = "mononoki Nerd Font:pixelsize=16:antialias=true:autohint=true:"; */
 /* char *font = "UbuntuMono Nerd Font:pixelsize=17:antialias=true:autohint=true:"; */
 int borderpx = 0;
