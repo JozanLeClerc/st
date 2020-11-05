@@ -16,7 +16,7 @@
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  * Remember to remove cwscale if you change font
  */
-char *font = "mononoki Nerd Font:size=12:antialias=true:autohint=true:";
+char *font = "UbuntuMono Nerd Font:size=13:antialias=true:autohint=true:";
 int borderpx = 0;
 
 /*
@@ -37,7 +37,7 @@ char *stty_args = "stty raw pass8 nl -echo -iexten -cstopb 38400";
 char *vtiden = "\033[?6c";
 
 /* Kerning / character bounding-box multipliers */
-float cwscale = 0.85;
+float cwscale = 1.0;
 float chscale = 1.0;
 
 /*
