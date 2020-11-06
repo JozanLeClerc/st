@@ -46,9 +46,9 @@ Most settings are done by editing config.h and recompiling.
  -----
  The default font is part of the
  Nerd Fonts collection but can
- be changed in ~config.h:19~
+ be changed in config.h:19
 
  Colors
  ------
- The colorscheme used in this build is ~gruvbox dark hard~, you can change it
- at ~config.h:110~.
+ The colorscheme used in this build is gruvbox dark hard, you can change it
+ at config.h:110.
