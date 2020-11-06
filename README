@@ -44,9 +44,8 @@ Most settings are done by editing config.h and recompiling.
 
  Fonts
  -----
- The default font is part of the
- Nerd Fonts collection but can
- be changed in config.h:19
+ The default font is part of the Nerd Fonts collection but can
+ be changed in config.h:19.
 
  Colors
  ------
