@@ -49,5 +49,5 @@ Most settings are done by editing config.h and recompiling.
 
  Colors
  ------
- The colorscheme used in this build is gruvbox dark hard, you can change it
- at config.h:110.
+ The colorscheme used in this build is gruvbox dark hard, you can
+ change it at config.h:110.

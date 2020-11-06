@@ -41,7 +41,7 @@ Most settings are done by editing ~config.h~ and recompiling.
 ** Fonts
 The default font is part of the
 [[https://github.com/ryanoasis/nerd-fonts][Nerd Fonts]] collection but can
-be changed in ~config.h:19~.
+be changed at ~config.h:19~.
 
 ** Colors
 The colorscheme used in this build is ~gruvbox dark hard~, you can change it
