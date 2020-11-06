@@ -23,7 +23,7 @@ To install this build, run these commands:
   # make install clean
 
 It is installed by default in the user /usr/local/bin directory but you can
-change it to something that matches more yout $PATH by editing the PREFIX
+change it to something that matches more your $PATH by editing the PREFIX
 variable in config.mk.
 
 Applied patches
