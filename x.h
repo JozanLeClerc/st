@@ -46,6 +46,11 @@ typedef struct {
 	signed char appcursor; /* application cursor */
 } Key;
 
+typedef enum {
+	PixelGeometry,
+	CellGeometry
+} Geometry;
+
 /* X modifiers */
 #define XK_ANY_MOD    UINT_MAX
 #define XK_NO_MOD     0

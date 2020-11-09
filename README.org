@@ -29,11 +29,12 @@ You can find a list of patches and check what those I've applied are
 doing on *st*'s [[https://st.suckless.org/patches/][patches]] page.
 
 Here is my list:
+- /anygeometry/
 - /bold is not bright/
+- /clipboard/
 - /hidecursor/
 - /keyboard select/
 - /scrollback/
-- /clipboard/
 
 * Settings
 Most settings are done by editing ~config.h~ and recompiling.

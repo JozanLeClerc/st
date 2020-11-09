@@ -140,6 +140,12 @@ const char *colorname[] = {
 
 
 /*
+ * Whether to use pixel geometry or cell geometry
+ */
+
+static Geometry geometry = CellGeometry;
+
+/*
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
@@ -147,6 +153,13 @@ unsigned int defaultfg = 256;
 unsigned int defaultbg = 257;
 unsigned int defaultcs = 258;
 unsigned int defaultrcs = 257;
+
+/*
+ * Default width and height (including borders!)
+ */
+
+static unsigned int width = 564;
+static unsigned int height = 364;
 
 /*
  * Default shape of cursor
