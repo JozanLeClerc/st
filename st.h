@@ -1,9 +1,5 @@
 /* See LICENSE for license details. */
 
-#ifndef __ST_H__
-#define __ST_H__
-
-#include <stddef.h>
 #include <stdint.h>
 #include <sys/types.h>
 
@@ -131,5 +127,3 @@ extern char *termname;
 extern unsigned int tabspaces;
 extern unsigned int defaultfg;
 extern unsigned int defaultbg;
-
-#endif /* end of include guard: __ST_H__ */

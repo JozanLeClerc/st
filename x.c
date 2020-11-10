@@ -17,10 +17,139 @@
 
 char *argv0;
 #include "arg.h"
-#include "x.h"
+#include "st.h"
+#include "win.h"
+
+/* types used in config.h */
+typedef struct {
+	uint mod;
+	KeySym keysym;
+	void (*func)(const Arg *);
+	const Arg arg;
+} Shortcut;
+
+typedef struct {
+	uint mod;
+	uint button;
+	void (*func)(const Arg *);
+	const Arg arg;
+	uint  release;
+	int  altscrn;  /* 0: don't care, -1: not alt screen, 1: alt screen */
+} MouseShortcut;
+
+typedef struct {
+	KeySym k;
+	uint mask;
+	char *s;
+	/* three-valued logic variables: 0 indifferent, 1 on, -1 off */
+	signed char appkey;    /* application keypad */
+	signed char appcursor; /* application cursor */
+} Key;
+
+typedef enum {
+	PixelGeometry,
+	CellGeometry
+} Geometry;
+
+/* X modifiers */
+#define XK_ANY_MOD    UINT_MAX
+#define XK_NO_MOD     0
+#define XK_SWITCH_MOD (1<<13)
+
+/* function definitions used in config.h */
+static void clipcopy(const Arg *);
+static void clippaste(const Arg *);
+static void numlock(const Arg *);
+static void selpaste(const Arg *);
+static void zoom(const Arg *);
+static void zoomabs(const Arg *);
+static void zoomreset(const Arg *);
+static void ttysend(const Arg *);
 
 /* config.h for applying patches and the configuration. */
 #include "config.h"
+
+/* XEMBED messages */
+#define XEMBED_FOCUS_IN  4
+#define XEMBED_FOCUS_OUT 5
+
+/* macros */
+#define IS_SET(flag)		((win.mode & (flag)) != 0)
+#define TRUERED(x)		(((x) & 0xff0000) >> 8)
+#define TRUEGREEN(x)		(((x) & 0xff00))
+#define TRUEBLUE(x)		(((x) & 0xff) << 8)
+
+typedef XftDraw *Draw;
+typedef XftColor Color;
+typedef XftGlyphFontSpec GlyphFontSpec;
+
+/* Purely graphic info */
+typedef struct {
+	int tw, th; /* tty width and height */
+	int w, h; /* window width and height */
+	int ch; /* char height */
+	int cw; /* char width  */
+	int mode; /* window state/mode flags */
+	int cursor; /* cursor style */
+} TermWindow;
+
+typedef struct {
+	Display *dpy;
+	Colormap cmap;
+	Window win;
+	Drawable buf;
+	GlyphFontSpec *specbuf; /* font spec buffer used for rendering */
+	Atom xembed, wmdeletewin, netwmname, netwmiconname, netwmpid;
+	struct {
+		XIM xim;
+		XIC xic;
+		XPoint spot;
+		XVaNestedList spotlist;
+	} ime;
+	Draw draw;
+	Visual *vis;
+	XSetWindowAttributes attrs;
+	/* Here, we use the term *pointer* to differentiate the cursor
+	 * one sees when hovering the mouse over the terminal from, e.g.,
+	 * a green rectangle where text would be entered. */
+	Cursor vpointer, bpointer; /* visible and hidden pointers */
+	int pointerisvisible;
+	int scr;
+	int isfixed; /* is fixed geometry? */
+	int l, t; /* left and top offset */
+	int gm; /* geometry mask */
+} XWindow;
+
+typedef struct {
+	Atom xtarget;
+	char *primary, *clipboard;
+	struct timespec tclick1;
+	struct timespec tclick2;
+} XSelection;
+
+/* Font structure */
+#define Font Font_
+typedef struct {
+	int height;
+	int width;
+	int ascent;
+	int descent;
+	int badslant;
+	int badweight;
+	short lbearing;
+	short rbearing;
+	XftFont *match;
+	FcFontSet *set;
+	FcPattern *pattern;
+} Font;
+
+/* Drawing Context */
+typedef struct {
+	Color *col;
+	size_t collen;
+	Font font, bfont, ifont, ibfont;
+	GC gc;
+} DC;
 
 static inline ushort sixd_to_16bit(int);
 static int xmakeglyphfontspecs(XftGlyphFontSpec *, const Glyph *, int, int, int);
@@ -60,7 +189,7 @@ static void bpress(XEvent *);
 static void bmotion(XEvent *);
 static void propnotify(XEvent *);
 static void selnotify(XEvent *);
-/* static void selclear_(XEvent *); */
+static void selclear_(XEvent *);
 static void selrequest(XEvent *);
 static void setsel(char *, Time);
 static void mousesel(XEvent *, int);
@@ -141,7 +270,6 @@ clipcopy(const Arg *dummy)
 {
 	Atom clipboard;
 
-	(void)dummy;
 	free(xsel.clipboard);
 	xsel.clipboard = NULL;
 
@@ -157,7 +285,6 @@ clippaste(const Arg *dummy)
 {
 	Atom clipboard;
 
-	(void)dummy;
 	clipboard = XInternAtom(xw.dpy, "CLIPBOARD", 0);
 	XConvertSelection(xw.dpy, clipboard, xsel.xtarget, clipboard,
 			xw.win, CurrentTime);
@@ -166,7 +293,6 @@ clippaste(const Arg *dummy)
 void
 selpaste(const Arg *dummy)
 {
-	(void)dummy;
 	XConvertSelection(xw.dpy, XA_PRIMARY, xsel.xtarget, XA_PRIMARY,
 			xw.win, CurrentTime);
 }
@@ -174,7 +300,6 @@ selpaste(const Arg *dummy)
 void
 numlock(const Arg *dummy)
 {
-	(void)dummy;
 	win.mode ^= MODE_NUMLOCK;
 }
 
@@ -202,7 +327,6 @@ zoomreset(const Arg *arg)
 {
 	Arg larg;
 
-	(void)arg;
 	if (defaultfontsize > 0) {
 		larg.f = defaultfontsize;
 		zoomabs(&larg);
@@ -237,7 +361,7 @@ mousesel(XEvent *e, int done)
 	int type, seltype = SEL_REGULAR;
 	uint state = e->xbutton.state & ~(Button1Mask | forcemousemod);
 
-	for (type = 1; type < (long)LEN(selmasks); ++type) {
+	for (type = 1; type < LEN(selmasks); ++type) {
 		if (match(selmasks[type], state)) {
 			seltype = type;
 			break;
@@ -485,12 +609,11 @@ xclipcopy(void)
 	clipcopy(NULL);
 }
 
-/* void */
-/* selclear_(XEvent *e) */
-/* { */
-/*     (void)e; */
-/*     selclear(); */
-/* } */
+void
+selclear_(XEvent *e)
+{
+	selclear();
+}
 
 void
 selrequest(XEvent *e)
@@ -574,13 +697,6 @@ xsetsel(char *str)
 void
 brelease(XEvent *e)
 {
-	if (!xw.pointerisvisible) {
-		XDefineCursor(xw.dpy, xw.win, xw.vpointer);
-		xw.pointerisvisible = 1;
-		if (!IS_SET(MODE_MOUSEMANY))
-			xsetpointermotion(0);
-	}
-
 	if (IS_SET(MODE_MOUSE) && !(e->xbutton.state & forcemousemod)) {
 		mousereport(e);
 		return;
@@ -601,6 +717,7 @@ bmotion(XEvent *e)
 		if (!IS_SET(MODE_MOUSEMANY))
 			xsetpointermotion(0);
 	}
+
 	if (IS_SET(MODE_MOUSE) && !(e->xbutton.state & forcemousemod)) {
 		mousereport(e);
 		return;
@@ -690,7 +807,7 @@ xloadcols(void)
 		dc.col = xmalloc(dc.collen * sizeof(Color));
 	}
 
-	for (i = 0; i < (long)dc.collen; i++)
+	for (i = 0; i < dc.collen; i++)
 		if (!xloadcolor(i, NULL, &dc.col[i])) {
 			if (colorname[i])
 				die("could not allocate color '%s'\n", colorname[i]);
@@ -704,9 +821,8 @@ int
 xsetcolorname(int x, const char *name)
 {
 	Color ncolor;
-	long tmp = (long)dc.collen;
 
-	if (!BETWEEN(x, 0, tmp))
+	if (!BETWEEN(x, 0, dc.collen))
 		return 1;
 
 	if (!xloadcolor(x, name, &ncolor))
@@ -951,7 +1067,6 @@ ximopen(Display *dpy)
 	XIMCallback imdestroy = { .client_data = NULL, .callback = ximdestroy };
 	XICCallback icdestroy = { .client_data = NULL, .callback = xicdestroy };
 
-	(void)dpy;
 	xw.ime.xim = XOpenIM(xw.dpy, NULL, NULL, NULL);
 	if (xw.ime.xim == NULL)
 		return 0;
@@ -979,8 +1094,6 @@ ximopen(Display *dpy)
 void
 ximinstantiate(Display *dpy, XPointer client, XPointer call)
 {
-	(void)client;
-	(void)call;
 	if (ximopen(dpy))
 		XUnregisterIMInstantiateCallback(xw.dpy, NULL, NULL, NULL,
 		                                 ximinstantiate, NULL);
@@ -989,9 +1102,6 @@ ximinstantiate(Display *dpy, XPointer client, XPointer call)
 void
 ximdestroy(XIM xim, XPointer client, XPointer call)
 {
-	(void)xim;
-	(void)client;
-	(void)call;
 	xw.ime.xim = NULL;
 	XRegisterIMInstantiateCallback(xw.dpy, NULL, NULL, NULL,
 	                               ximinstantiate, NULL);
@@ -1001,9 +1111,6 @@ ximdestroy(XIM xim, XPointer client, XPointer call)
 int
 xicdestroy(XIC xim, XPointer client, XPointer call)
 {
-	(void)xim;
-	(void)client;
-	(void)call;
 	xw.ime.xic = NULL;
 	return 1;
 }
@@ -1107,6 +1214,7 @@ xinit(int w, int h)
 	blankpm = XCreateBitmapFromData(xw.dpy, xw.win, &(char){0}, 1, 1);
 	xw.bpointer = XCreatePixmapCursor(xw.dpy, blankpm, blankpm,
 					  &xmousefg, &xmousebg, 0, 0);
+
 	xw.xembed = XInternAtom(xw.dpy, "_XEMBED", False);
 	xw.wmdeletewin = XInternAtom(xw.dpy, "WM_DELETE_WINDOW", False);
 	xw.netwmname = XInternAtom(xw.dpy, "_NET_WM_NAME", False);
@@ -1588,7 +1696,6 @@ xximspot(int x, int y)
 void
 expose(XEvent *ev)
 {
-	(void)ev;
 	redraw();
 }
 
@@ -1603,7 +1710,6 @@ visibility(XEvent *ev)
 void
 unmap(XEvent *ev)
 {
-	(void)ev;
 	win.mode &= ~MODE_VISIBLE;
 }
 
@@ -1690,7 +1796,7 @@ kmap(KeySym k, uint state)
 	int i;
 
 	/* Check for mapped keys out of X11 function keys. */
-	for (i = 0; i < (long)LEN(mappedkeys); i++) {
+	for (i = 0; i < LEN(mappedkeys); i++) {
 		if (mappedkeys[i] == k)
 			break;
 	}
@@ -1746,7 +1852,7 @@ kpress(XEvent *ev)
 		len = XLookupString(e, buf, sizeof buf, &ksym, NULL);
 	if ( IS_SET(MODE_KBDSELECT) ) {
 		if ( match(XK_NO_MOD, e->state) ||
-				(XK_Shift_L | XK_Shift_R) & e->state )
+		     (XK_Shift_L | XK_Shift_R) & e->state )
 			win.mode ^= trt_kbdselect(ksym, buf, len);
 		return;
 	}
@@ -1796,7 +1902,7 @@ cmessage(XEvent *e)
 		} else if (e->xclient.data.l[1] == XEMBED_FOCUS_OUT) {
 			win.mode &= ~MODE_FOCUSED;
 		}
-	} else if (e->xclient.data.l[0] == (long)xw.wmdeletewin) {
+	} else if (e->xclient.data.l[0] == xw.wmdeletewin) {
 		ttyhangup();
 		exit(0);
 	}
@@ -1915,19 +2021,6 @@ run(void)
 }
 
 void
-toggle_winmode(int flag)
-{
-	win.mode ^= flag;
-}
-
-void
-keyboard_select(const Arg *dummy)
-{
-	(void)dummy;
-	win.mode ^= trt_kbdselect(-1, NULL, 0);
-}
-
-void
 usage(void)
 {
 	die("usage: %s [-aiv] [-c class] [-f font] [-g geometry]"
@@ -1938,6 +2031,14 @@ usage(void)
 	    " [-n name] [-o file]\n"
 	    "          [-T title] [-t title] [-w windowid] -l line"
 	    " [stty_args ...]\n", argv0, argv0);
+}
+
+void toggle_winmode(int flag) {
+	win.mode ^= flag;
+}
+
+void keyboard_select(const Arg *dummy) {
+	win.mode ^= trt_kbdselect(-1, NULL, 0);
 }
 
 int
@@ -1991,7 +2092,7 @@ main(int argc, char *argv[])
 		opt_embed = EARGF(usage());
 		break;
 	case 'v':
-		die("%s 0.8.4\n", argv0);
+		die("%s " VERSION "\n", argv0);
 		break;
 	default:
 		usage();

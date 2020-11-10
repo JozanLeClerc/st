@@ -21,7 +21,7 @@ LIBS = -L$(X11LIB) -lm -lrt -lX11 -lutil -lXft \
        `$(PKG_CONFIG) --libs freetype2`
 
 # flags
-CFLAGS	= -std=c99 -Wall -Wextra -Werror -Wno-type-limits -pedantic -march=ivybridge -Os -pipe
+CFLAGS	= -std=c99 -march=ivybridge -Os -pipe
 STCPPFLAGS = -DVERSION=\"$(VERSION)\" -D_XOPEN_SOURCE=600
 STCFLAGS = $(INCS) $(STCPPFLAGS) $(CPPFLAGS) $(CFLAGS)
 STLDFLAGS = $(LIBS) $(LDFLAGS)

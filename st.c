@@ -23,11 +23,11 @@
 #include "win.h"
 
 #if   defined(__linux)
-#include <pty.h>
+ #include <pty.h>
 #elif defined(__OpenBSD__) || defined(__NetBSD__) || defined(__APPLE__)
-#include <util.h>
+ #include <util.h>
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
-#include <libutil.h>
+ #include <libutil.h>
 #endif
 
 /* Arbitrary sizes */
@@ -40,12 +40,12 @@
 #define HISTSIZE      2000
 
 /* macros */
-#define IS_SET(flag)	((term.mode & (flag)) != 0)
-#define ISCONTROLC0(c)	(BETWEEN(c, 0, 0x1f) || (c) == 0x7f)
-#define ISCONTROLC1(c)	(BETWEEN(c, 0x80, 0x9f))
-#define ISCONTROL(c)	(ISCONTROLC0(c) || ISCONTROLC1(c))
+#define IS_SET(flag)		((term.mode & (flag)) != 0)
+#define ISCONTROLC0(c)		(BETWEEN(c, 0, 0x1f) || (c) == 0x7f)
+#define ISCONTROLC1(c)		(BETWEEN(c, 0x80, 0x9f))
+#define ISCONTROL(c)		(ISCONTROLC0(c) || ISCONTROLC1(c))
 #define ISDELIM(u)		(u && wcschr(worddelimiters, u))
-#define	TLINE(y)		((y) < term.scr ? term.hist[((y) + term.histi - \
+#define TLINE(y)		((y) < term.scr ? term.hist[((y) + term.histi - \
 				term.scr + HISTSIZE + 1) % HISTSIZE] : \
 				term.line[(y) - term.scr])
 
@@ -117,26 +117,26 @@ typedef struct {
 
 /* Internal representation of the screen */
 typedef struct {
-	int row;			 /* nb row */
-	int col;			 /* nb col */
-	Line *line;			 /* screen */
-	Line *alt;			 /* alternate screen */
+	int row;      /* nb row */
+	int col;      /* nb col */
+	Line *line;   /* screen */
+	Line *alt;    /* alternate screen */
 	Line hist[HISTSIZE]; /* history buffer */
-	int histi;			 /* history index */
-	int scr;			 /* scroll back */
-	int *dirty;			 /* dirtyness of lines */
-	TCursor c;			 /* cursor */
-	int ocx;			 /* old cursor col */
-	int ocy;			 /* old cursor row */
-	int top;			 /* top    scroll limit */
-	int bot;			 /* bottom scroll limit */
-	int mode;			 /* terminal mode flags */
-	int esc;			 /* escape state flags */
-	char trantbl[4];	 /* charset table translation */
-	int charset;		 /* current charset */
-	int icharset;		 /* selected charset for sequence */
+	int histi;    /* history index */
+	int scr;      /* scroll back */
+	int *dirty;   /* dirtyness of lines */
+	TCursor c;    /* cursor */
+	int ocx;      /* old cursor col */
+	int ocy;      /* old cursor row */
+	int top;      /* top    scroll limit */
+	int bot;      /* bottom scroll limit */
+	int mode;     /* terminal mode flags */
+	int esc;      /* escape state flags */
+	char trantbl[4]; /* charset table translation */
+	int charset;  /* current charset */
+	int icharset; /* selected charset for sequence */
 	int *tabs;
-	Rune lastc;			 /* last printed char outside of sequence, 0 if control */
+	Rune lastc;   /* last printed char outside of sequence, 0 if control */
 } Term;
 
 /* CSI Escape sequence structs */
@@ -585,7 +585,7 @@ selsnap(int *x, int *y, int direction)
 			}
 		} else if (direction > 0) {
 			for (; *y < term.row-1; *y += direction) {
-				if (!(term.line[*y][term.col-1].mode
+				if (!(TLINE(*y)[term.col-1].mode
 						& ATTR_WRAP)) {
 					break;
 				}
@@ -729,7 +729,6 @@ sigchld(int a)
 	int stat;
 	pid_t p;
 
-	(void)a;
 	if ((p = waitpid(pid, &stat, WNOHANG)) < 0)
 		die("waiting for pid %hd failed: %s\n", pid, strerror(errno));
 
@@ -841,10 +840,8 @@ ttyread(void)
 	switch (ret) {
 	case 0:
 		exit(0);
-		break;
 	case -1:
 		die("couldn't read from shell: %s\n", strerror(errno));
-		break;
 	default:
 		buflen += ret;
 		written = twrite(buf, buflen, 0);
@@ -853,9 +850,7 @@ ttyread(void)
 		if (buflen > 0)
 			memmove(buf, buf + written, buflen);
 		return ret;
-		break;
 	}
-	return ret;
 }
 
 void
@@ -922,7 +917,7 @@ ttywriteraw(const char *s, size_t n)
 			 */
 			if ((r = write(cmdfd, s, (n < lim)? n : lim)) < 0)
 				goto write_error;
-			if (r < (long)n) {
+			if (r < n) {
 				/*
 				 * We weren't able to write out everything.
 				 * This means the buffer is getting full
@@ -1040,7 +1035,7 @@ treset(void)
 	}, .x = 0, .y = 0, .state = CURSOR_DEFAULT};
 
 	memset(term.tabs, 0, term.col * sizeof(*term.tabs));
-	for (i = tabspaces; (int)i < term.col; i += tabspaces)
+	for (i = tabspaces; i < term.col; i += tabspaces)
 		term.tabs[i] = 1;
 	term.top = 0;
 	term.bot = term.row - 1;
@@ -2047,7 +2042,6 @@ strreset(void)
 void
 sendbreak(const Arg *arg)
 {
-	(void)arg;
 	if (tcsendbreak(cmdfd, 0))
 		perror("Error sending break");
 }
@@ -2065,21 +2059,18 @@ tprinter(char *s, size_t len)
 void
 toggleprinter(const Arg *arg)
 {
-	(void)arg;
 	term.mode ^= MODE_PRINT;
 }
 
 void
 printscreen(const Arg *arg)
 {
-	(void)arg;
 	tdump();
 }
 
 void
 printsel(const Arg *arg)
 {
-	(void)arg;
 	tdumpsel();
 }
 
@@ -2122,19 +2113,17 @@ void
 tputtab(int n)
 {
 	uint x = term.c.x;
-	int tmp;
 
 	if (n > 0) {
-		while ((int)x < term.col && n--)
-			for (++x; (int)x < term.col && !term.tabs[x]; ++x)
+		while (x < term.col && n--)
+			for (++x; x < term.col && !term.tabs[x]; ++x)
 				/* nothing */ ;
 	} else if (n < 0) {
 		while (x > 0 && n++)
 			for (--x; x > 0 && !term.tabs[x]; --x)
 				/* nothing */ ;
 	}
-	tmp = (int)x;
-	term.c.x = LIMIT(tmp, 0, term.col-1);
+	term.c.x = LIMIT(x, 0, term.col-1);
 }
 
 void
@@ -2384,7 +2373,7 @@ tputc(Rune u)
 {
 	char c[UTF_SIZ];
 	int control;
-	int width = 0, len;
+	int width, len;
 	Glyph *gp;
 
 	control = ISCONTROL(u);
@@ -2696,21 +2685,19 @@ redraw(void)
 	draw();
 }
 
-void
-set_notifmode(int type, KeySym ksym)
-{
+void set_notifmode(int type, KeySym ksym) {
 	static char *lib[] = { " MOVE ", " SEL  "};
 	static Glyph *g, *deb, *fin;
 	static int col, bot;
 
-	if ( (long)ksym == -1 ) {
+	if ( ksym == -1 ) {
 		free(g);
 		col = term.col, bot = term.bot;
 		g = xmalloc(col * sizeof(Glyph));
 		memcpy(g, term.line[bot], col * sizeof(Glyph));
 
 	}
-	else if ( (long)ksym == -2 )
+	else if ( ksym == -2 )
 		memcpy(term.line[bot], g, col * sizeof(Glyph));
 
 	if ( type < 2 ) {
@@ -2734,9 +2721,7 @@ set_notifmode(int type, KeySym ksym)
 	drawregion(0, bot, col, bot + 1);
 }
 
-void
-select_or_drawcursor(int selectsearch_mode, int type)
-{
+void select_or_drawcursor(int selectsearch_mode, int type) {
 	int done = 0;
 
 	if ( selectsearch_mode & 1 ) {
@@ -2745,12 +2730,10 @@ select_or_drawcursor(int selectsearch_mode, int type)
 	}
 	else
 		xdrawcursor(term.c.x, term.c.y, term.line[term.c.y][term.c.x],
-				term.ocx, term.ocy, term.line[term.ocy][term.ocx]);
+			    term.ocx, term.ocy, term.line[term.ocy][term.ocx]);
 }
 
-void
-search(int selectsearch_mode, Rune *target, int ptarget, int incr, int type, TCursor *cu)
-{
+void search(int selectsearch_mode, Rune *target, int ptarget, int incr, int type, TCursor *cu) {
 	Rune *r;
 	int i, bound = (term.col * cu->y + cu->x) * (incr > 0) + incr;
 
@@ -2772,9 +2755,7 @@ search(int selectsearch_mode, Rune *target, int ptarget, int incr, int type, TCu
 	}
 }
 
-int
-trt_kbdselect(KeySym ksym, char *buf, int len)
-{
+int trt_kbdselect(KeySym ksym, char *buf, int len) {
 	static TCursor cu;
 	static Rune target[64];
 	static int type = 1, ptarget, in_use;
@@ -2814,112 +2795,108 @@ trt_kbdselect(KeySym ksym, char *buf, int len)
 	}
 
 	switch ( ksym ) {
-		case -1 :
-			in_use = 1;
-			cu.x = term.c.x, cu.y = term.c.y;
-			set_notifmode(0, ksym);
-			return MODE_KBDSELECT;
-		case XK_s :
-			if ( selectsearch_mode & 1 )
-				selclear();
-			else
-				selstart(term.c.x, term.c.y, 0);
-			set_notifmode(selectsearch_mode ^= 1, ksym);
-			break;
-		case XK_t :
-			selextend(term.c.x, term.c.y, type ^= 3, i = 0);  /* 2 fois */
-			selextend(term.c.x, term.c.y, type, i = 0);
-			break;
-		case XK_slash :
-		case XK_KP_Divide :
-		case XK_question :
-			ksym &= XK_question;                /* Divide to slash */
-			sens = (ksym == XK_slash) ? -1 : 1;
-			ptarget = 0;
-			set_notifmode(15, ksym);
-			selectsearch_mode ^= 2;
-			break;
-		case XK_Escape :
-			if ( !in_use )  break;
+	case -1 :
+		in_use = 1;
+		cu.x = term.c.x, cu.y = term.c.y;
+		set_notifmode(0, ksym);
+		return MODE_KBDSELECT;
+	case XK_s :
+		if ( selectsearch_mode & 1 )
 			selclear();
+		else
+			selstart(term.c.x, term.c.y, 0);
+		set_notifmode(selectsearch_mode ^= 1, ksym);
+		break;
+	case XK_t :
+		selextend(term.c.x, term.c.y, type ^= 3, i = 0);  /* 2 fois */
+		selextend(term.c.x, term.c.y, type, i = 0);
+		break;
+	case XK_slash :
+	case XK_KP_Divide :
+	case XK_question :
+		ksym &= XK_question;                /* Divide to slash */
+		sens = (ksym == XK_slash) ? -1 : 1;
+		ptarget = 0;
+		set_notifmode(15, ksym);
+		selectsearch_mode ^= 2;
+		break;
+	case XK_Escape :
+		if ( !in_use )  break;
+		selclear();
+	case XK_Return :
+		set_notifmode(4, ksym);
+		term.c.x = cu.x, term.c.y = cu.y;
+		select_or_drawcursor(selectsearch_mode = 0, type);
+		in_use = quant = 0;
+		return MODE_KBDSELECT;
+	case XK_n :
+	case XK_N :
+		if ( ptarget )
+			search(selectsearch_mode, &target[0], ptarget, (ksym == XK_n) ? -1 : 1, type, &cu);
+		break;
+	case XK_BackSpace :
+		term.c.x = 0;
+		select_or_drawcursor(selectsearch_mode, type);
+		break;
+	case XK_dollar :
+		term.c.x = term.col - 1;
+		select_or_drawcursor(selectsearch_mode, type);
+		break;
+	case XK_Home :
+		term.c.x = 0, term.c.y = 0;
+		select_or_drawcursor(selectsearch_mode, type);
+		break;
+	case XK_End :
+		term.c.x = cu.x, term.c.y = cu.y;
+		select_or_drawcursor(selectsearch_mode, type);
+		break;
+	case XK_Page_Up :
+	case XK_Page_Down :
+		term.c.y = (ksym == XK_Prior ) ? 0 : cu.y;
+		select_or_drawcursor(selectsearch_mode, type);
+		break;
+	case XK_exclam :
+		term.c.x = term.col >> 1;
+		select_or_drawcursor(selectsearch_mode, type);
+		break;
+	case XK_asterisk :
+	case XK_KP_Multiply :
+		term.c.x = term.col >> 1;
+	case XK_underscore :
+		term.c.y = cu.y >> 1;
+		select_or_drawcursor(selectsearch_mode, type);
+		break;
+	default :
+		if ( ksym >= XK_0 && ksym <= XK_9 ) {               /* 0-9 keyboard */
+			quant = (quant * 10) + (ksym ^ XK_0);
+			return 0;
+		}
+		else if ( ksym >= XK_KP_0 && ksym <= XK_KP_9 ) {    /* 0-9 numpad */
+			quant = (quant * 10) + (ksym ^ XK_KP_0);
+			return 0;
+		}
+		else if ( ksym == XK_k || ksym == XK_h )
+			i = ksym & 1;
+		else if ( ksym == XK_l || ksym == XK_j )
+			i = ((ksym & 6) | 4) >> 1;
+		else if ( (XK_Home & ksym) != XK_Home || (i = (ksym ^ XK_Home) - 1) > 3 )
 			break;
-		case XK_Return :
-			set_notifmode(4, ksym);
-			term.c.x = cu.x, term.c.y = cu.y;
-			select_or_drawcursor(selectsearch_mode = 0, type);
-			in_use = quant = 0;
-			return MODE_KBDSELECT;
-			break;
-		case XK_n :
-			break;
-		case XK_N :
-			if ( ptarget )
-				search(selectsearch_mode, &target[0], ptarget, (ksym == XK_n) ? -1 : 1, type, &cu);
-			break;
-		case XK_BackSpace :
-			term.c.x = 0;
-			select_or_drawcursor(selectsearch_mode, type);
-			break;
-		case XK_dollar :
-			term.c.x = term.col - 1;
-			select_or_drawcursor(selectsearch_mode, type);
-			break;
-		case XK_Home :
-			term.c.x = 0, term.c.y = 0;
-			select_or_drawcursor(selectsearch_mode, type);
-			break;
-		case XK_End :
-			term.c.x = cu.x, term.c.y = cu.y;
-			select_or_drawcursor(selectsearch_mode, type);
-			break;
-		case XK_Page_Up :
-		case XK_Page_Down :
-			term.c.y = (ksym == XK_Prior ) ? 0 : cu.y;
-			select_or_drawcursor(selectsearch_mode, type);
-			break;
-		case XK_exclam :
-			term.c.x = term.col >> 1;
-			select_or_drawcursor(selectsearch_mode, type);
-			break;
-		case XK_asterisk :
-		case XK_KP_Multiply :
-			term.c.x = term.col >> 1;
-			break;
-		case XK_underscore :
-			term.c.y = cu.y >> 1;
-			select_or_drawcursor(selectsearch_mode, type);
-			break;
-		default :
-			if ( ksym >= XK_0 && ksym <= XK_9 ) {               /* 0-9 keyboard */
-				quant = (quant * 10) + (ksym ^ XK_0);
-				return 0;
-			}
-			else if ( ksym >= XK_KP_0 && ksym <= XK_KP_9 ) {    /* 0-9 numpad */
-				quant = (quant * 10) + (ksym ^ XK_KP_0);
-				return 0;
-			}
-			else if ( ksym == XK_k || ksym == XK_h )
-				i = ksym & 1;
-			else if ( ksym == XK_l || ksym == XK_j )
-				i = ((ksym & 6) | 4) >> 1;
-			else if ( (XK_Home & ksym) != XK_Home || (i = (ksym ^ XK_Home) - 1) > 3 )
-				break;
 
-			xy = (i & 1) ? &term.c.y : &term.c.x;
-			sens = (i & 2) ? 1 : -1;
-			bound = (i >> 1 ^ 1) ? 0 : (i ^ 3) ? term.col - 1 : term.bot;
+		xy = (i & 1) ? &term.c.y : &term.c.x;
+		sens = (i & 2) ? 1 : -1;
+		bound = (i >> 1 ^ 1) ? 0 : (i ^ 3) ? term.col - 1 : term.bot;
 
-			if ( quant == 0 )
-				quant++;
+		if ( quant == 0 )
+			quant++;
 
-			if ( *xy == bound && ((sens < 0 && bound == 0) || (sens > 0 && bound > 0)) )
-				break;
+		if ( *xy == bound && ((sens < 0 && bound == 0) || (sens > 0 && bound > 0)) )
+			break;
 
-			*xy += quant * sens;
-			if ( *xy < 0 || ( bound > 0 && *xy > bound) )
-				*xy = bound;
+		*xy += quant * sens;
+		if ( *xy < 0 || ( bound > 0 && *xy > bound) )
+			*xy = bound;
 
-			select_or_drawcursor(selectsearch_mode, type);
+		select_or_drawcursor(selectsearch_mode, type);
 	}
 	quant = 0;
 	return 0;

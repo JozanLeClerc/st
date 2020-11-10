@@ -3,7 +3,7 @@
 * Introduction
 This is my personnal build of *[[https://st.suckless.org/][st]]*,
 a simple terminal emulator for X which sucks less. I've applied some
-patches, added some compilation flags and fixed the code accordingly.
+patches.
 
 * Depedencies
 - A C compiler
