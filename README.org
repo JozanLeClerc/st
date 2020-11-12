@@ -32,6 +32,7 @@ Here is my list:
 - /anygeometry/
 - /bold is not bright/
 - /clipboard/
+- /externalpipe/
 - /hidecursor/
 - /keyboard select/
 - /scrollback/

@@ -32,8 +32,9 @@ doing on st's patches page.
 
 Here is my list:
   - anygeometry
-  - clipboard
   - bold is not bright
+  - clipboard
+  - externalpipe
   - hidecursor
   - keyboard select
   - scrollback
