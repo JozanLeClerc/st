@@ -6,7 +6,8 @@
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
 /* static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true"; */
-static char *font = "DejaVuSansMono Nerd Font:pixelsize=14:antialias=true:autohint=true:";
+/* static char *font = "DejaVuSansMono Nerd Font:pixelsize=14:antialias=true:autohint=true:"; */
+static char *font = "UbuntuMono Nerd Font:pixelsize=16:antialias=true:autohint=true:";
 static int borderpx = 0;
 
 /*
