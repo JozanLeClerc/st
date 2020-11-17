@@ -1,14 +1,33 @@
-#!/bin/sh
+#!/usr/local/bin/dash
 
 # Using external pipe with st, give a dmenu prompt of recent commands,
 # allowing the user to copy the output of one.
 # xclip required for this script.
 # By Jaywalker and Luke
-tmpfile=$(gmktemp /tmp/st-cmd-output.XXXXXX)
-trap 'grm "$tmpfile"' 0 1 15
-gsed -n "w $tmpfile"
-gsed -i 's/\x0//g' "$tmpfile"
-ps1="$(grep "\S" "$tmpfile" | gtail -n 1 | gsed 's/^\s*//' | gcut -d' ' -f1)"
-chosen="$(grep -F "$ps1" "$tmpfile" | gsed '$ d' | gtac | dmenu -i -l 10 | gsed 's/[^^]/[&]/g; s/\^/\\^/g')"
-eps1="$(gecho "$ps1" | gsed 's/[^^]/[&]/g; s/\^/\\^/g')"
-gawk "/^$chosen$/{p=1;print;next} p&&/$eps1/{p=0};p" "$tmpfile" | xclip -selection clipboard
+# Adapted for FreeBSD by Joe
+mem=$(cat)
+mem=$(printf "%s" "$mem" | gsed 's/\x0//g')
+ps1=$(printf "%s" "$mem" |
+	gtac |
+	tail -n1 |
+	gsed 's/%.\+/%/')
+chosen=$(printf "%s" "$mem" |
+	grep -F "$ps1" |
+	sed '$ d' |
+	gtac |
+	dmenu -i -l 10 |
+	sed 's/[^^]/[&]/g; s/\^/\\^/g')
+eps1=$(echo "$ps1" |
+	sed 's/[^^]/[&]/g; s/\^/\\^/g')
+if [ "$1" = "noprompt" ]; then
+	printf "%s" "$mem" |
+		gawk "/^$chosen$/{p=1;print;next} p&&/$eps1/{p=0};p" |
+		gtac |
+		sed '$ d' |
+		gtac |
+		xclip -selection clipboard
+else
+	printf "%s" "$mem" |
+		gawk "/^$chosen$/{p=1;print;next} p&&/$eps1/{p=0};p" |
+		xclip -selection clipboard
+fi

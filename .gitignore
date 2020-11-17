@@ -126,5 +126,6 @@ flycheck_*.el
 *.def.h
 *.rej
 *.orig
+.ccls*
 st
 compile_flags.txt

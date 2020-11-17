@@ -207,6 +207,7 @@ static char *cpyurlcmd[] = { "/bin/sh", "-c",
     "tmp=$(sed 's/.*│//g' | tr -d '\n' | grep -aEo '(((http|https|gopher|gemini|ftp|ftps|git)://|www\\.)[a-zA-Z0-9.]*[:]?[a-zA-Z0-9./@$&%?$#=_-~]*)|((magnet:\\?xt=urn:btih:)[a-zA-Z0-9]*)' | uniq | sed 's/^www./http:\\/\\/www\\./g' ); IFS=; [ ! -z $tmp ] && echo $tmp | dmenu -i -l 10 | tr -d '\n' | xclip -selection clipboard",
     "externalpipe", NULL };
 static char *cpyoutcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpyout", "externalpipe", NULL };
+static char *cpyoutnopcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpyout noprompt", "externalpipe", NULL };
 
 static Shortcut shortcuts[] = {
 	/* mask                 keysym          function        argument */
@@ -230,6 +231,7 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_J,           kscrolldown,    {.i =  1} },
 	{ TERMMOD,              XK_Y,           externalpipe,   {.v =  cpyurlcmd} },
 	{ TERMMOD,              XK_O,           externalpipe,   {.v =  cpyoutcmd} },
+	{ TERMMOD,              XK_P,           externalpipe,   {.v =  cpyoutnopcmd} },
 };
 
 /*
