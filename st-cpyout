@@ -15,7 +15,7 @@ chosen=$(printf "%s" "$mem" |
 	grep -F "$ps1" |
 	sed '$ d' |
 	gtac |
-	dmenu -i -l 10 |
+	dmenu -i -l 10 -m 0 |
 	sed 's/[^^]/[&]/g; s/\^/\\^/g')
 eps1=$(echo "$ps1" |
 	sed 's/[^^]/[&]/g; s/\^/\\^/g')
