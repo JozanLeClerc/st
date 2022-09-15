@@ -2876,7 +2876,7 @@ int trt_kbdselect(KeySym ksym, char *buf, int len) {
 		cu.x = term.c.x, cu.y = term.c.y;
 		set_notifmode(0, ksym);
 		return MODE_KBDSELECT;
-	case XK_s :
+	case XK_v :
 		if ( selectsearch_mode & 1 )
 			selclear();
 		else
@@ -2899,7 +2899,7 @@ int trt_kbdselect(KeySym ksym, char *buf, int len) {
 	case XK_Escape :
 		if ( !in_use )  break;
 		selclear();
-	case XK_Return :
+	case XK_y :
 		set_notifmode(4, ksym);
 		term.c.x = cu.x, term.c.y = cu.y;
 		select_or_drawcursor(selectsearch_mode = 0, type);
