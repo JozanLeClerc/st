@@ -53,6 +53,8 @@ typedef struct {
 /* function definitions used in config.h */
 static void clipcopy(const Arg *);
 static void clippaste(const Arg *);
+void kscrollup(const Arg *);
+void kscrolldown(const Arg *);
 static void numlock(const Arg *);
 static void selpaste(const Arg *);
 static void zoom(const Arg *);
