@@ -5,11 +5,10 @@
 # xclip required for this script.
 # By Jaywalker and Luke
 # Adapted for FreeBSD by Joe
-mem=$(cat)
-mem=$(printf "%s" "$mem" | sed 's/\x0//g')
+mem=$(sed 's/^ $//g' | sed 's/\x0//g')
 ps1=$(printf "%s" "$mem" |
 	tail -n1 |
-	sed 's/%.\+/%/')
+	sed -E 's/([%,#,>]).*/\1/')
 chosen=$(printf "%s" "$mem" |
 	grep -F "$ps1" |
 	sed '$ d' |
