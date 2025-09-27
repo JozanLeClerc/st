@@ -123,7 +123,7 @@ flycheck_*.el
 # End of https://www.gitignore.io/api/c,linux,emacs
 
 *.diff
-*.def.h
+config.h
 *.rej
 *.orig
 .ccls*
