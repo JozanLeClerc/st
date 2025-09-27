@@ -8,7 +8,6 @@
 mem=$(cat)
 mem=$(printf "%s" "$mem" | sed 's/\x0//g')
 ps1=$(printf "%s" "$mem" |
-	tac |
 	tail -n1 |
 	sed 's/%.\+/%/')
 chosen=$(printf "%s" "$mem" |
