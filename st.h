@@ -82,12 +82,14 @@ void die(const char *, ...);
 void redraw(void);
 void draw(void);
 
+void externalpipe(const Arg *);
 void printscreen(const Arg *);
 void printsel(const Arg *);
 void sendbreak(const Arg *);
 void toggleprinter(const Arg *);
 
 int tattrset(int);
+int tisaltscr(void);
 void tnew(int, int);
 void tresize(int, int);
 void tsetdirtattr(int);

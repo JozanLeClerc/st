@@ -13,7 +13,7 @@ config.h:
 	cp config.def.h config.h
 
 .c.o:
-	$(CC) $(STCFLAGS) -c $<
+	$(CC) -O0 -g3 -fsanitize=address $(STCFLAGS) -c $<
 
 st.o: config.h st.h win.h
 x.o: arg.h config.h st.h win.h
@@ -21,7 +21,7 @@ x.o: arg.h config.h st.h win.h
 $(OBJ): config.h config.mk
 
 st: $(OBJ)
-	$(CC) -o $@ $(OBJ) $(STLDFLAGS)
+	$(CC) -fsanitize=address -o $@ $(OBJ) $(STLDFLAGS)
 
 clean:
 	rm -f st $(OBJ) config.h st-$(VERSION).tar.gz

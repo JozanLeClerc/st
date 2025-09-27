@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# Using external pipe with st, give a dmenu prompt of recent commands,
+# allowing the user to copy the output of one.
+# xclip required for this script.
+# By Jaywalker and Luke
+# Adapted for FreeBSD by Joe
+mem=$(cat)
+mem=$(printf "%s" "$mem" | sed 's/\x0//g')
+ps1=$(printf "%s" "$mem" |
+	tac |
+	tail -n1 |
+	sed 's/%.\+/%/')
+chosen=$(printf "%s" "$mem" |
+	grep -F "$ps1" |
+	sed '$ d' |
+	tac |
+	dmenu -i -l 10 -m 0 |
+	sed 's/[^^]/[&]/g; s/\^/\\^/g')
+eps1=$(echo "$ps1" |
+	sed 's/[^^]/[&]/g; s/\^/\\^/g')
+if [ "$1" = "noprompt" ]; then
+	printf "%s" "$mem" |
+		gawk "/^$chosen$/{p=1;print;next} p&&/$eps1/{p=0};p" |
+		tac |
+		sed '$ d' |
+		tac |
+		perl -p -e 'chomp if eof' |
+		xclip -selection clipboard
+else
+	printf "%s" "$mem" |
+		gawk "/^$chosen$/{p=1;print;next} p&&/$eps1/{p=0};p" |
+		xclip -selection clipboard
+fi

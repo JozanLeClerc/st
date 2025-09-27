@@ -176,16 +176,24 @@ static uint forcemousemod = ShiftMask;
  */
 static MouseShortcut mshortcuts[] = {
 	/* mask                 button   function        argument       release */
+	{ XK_ANY_MOD,           Button4, kscrollup,      {.i = 3}, 0, /* !alt */ -1 },
+	{ XK_ANY_MOD,           Button5, kscrolldown,    {.i = 3}, 0, /* !alt */ -1 },
 	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
-	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
+	/* { ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
 	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
 	{ ShiftMask,            Button5, ttysend,        {.s = "\033[6;2~"} },
-	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
+	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} }, */
 };
 
 /* Internal keyboard shortcuts. */
 #define MODKEY Mod1Mask
 #define TERMMOD (ControlMask|ShiftMask)
+
+static char *linkviewcmd[] = { "/bin/sh", "-c",
+    "alacritty -e linkview $(tmp=$(xurls | uniq); IFS=; [ ! -z $tmp ] && echo $tmp | dmenu -i -l 20 -m 0 | tr -d '\n' | cat)",
+    "externalpipe", NULL };
+static char *cpyoutcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpyout", "externalpipe", NULL };
+static char *cpyoutnopcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpyout noprompt", "externalpipe", NULL };
 
 static Shortcut shortcuts[] = {
 	/* mask                 keysym          function        argument */
@@ -208,6 +216,9 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_D,           kscrolldown,    {.i = -1} },
 	{ TERMMOD,              XK_K,           kscrollup,      {.i =  1} },
 	{ TERMMOD,              XK_J,           kscrolldown,    {.i =  1} },
+	{ TERMMOD,              XK_I,           externalpipe,   {.v =  linkviewcmd } },
+	{ TERMMOD,              XK_P,           externalpipe,   {.v =  cpyoutcmd} },
+	{ TERMMOD,              XK_O,           externalpipe,   {.v =  cpyoutnopcmd} },
 };
 
 /*

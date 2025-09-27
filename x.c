@@ -34,6 +34,7 @@ typedef struct {
 	void (*func)(const Arg *);
 	const Arg arg;
 	uint  release;
+	int  altscrn;  /* 0: don't care, -1: not alt screen, 1: alt screen */
 } MouseShortcut;
 
 typedef struct {
@@ -459,6 +460,7 @@ mouseaction(XEvent *e, uint release)
 	for (ms = mshortcuts; ms < mshortcuts + LEN(mshortcuts); ms++) {
 		if (ms->release == release &&
 		    ms->button == e->xbutton.button &&
+		    (!ms->altscrn || (ms->altscrn == (tisaltscr() ? 1 : -1))) &&
 		    (match(ms->mod, state) ||  /* exact or forced */
 		     match(ms->mod, state & ~forcemousemod))) {
 			ms->func(&(ms->arg));
@@ -1597,7 +1599,7 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
 			break;
 		}
 	} else {
-		XftDrawRect(xw.draw, &drawcol,
+		/* XftDrawRect(xw.draw, &drawcol,
 				borderpx + cx * win.cw,
 				borderpx + cy * win.ch,
 				win.cw - 1, 1);
@@ -1612,7 +1614,7 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
 		XftDrawRect(xw.draw, &drawcol,
 				borderpx + cx * win.cw,
 				borderpx + (cy + 1) * win.ch - 1,
-				win.cw, 1);
+				win.cw, 1); */
 	}
 }
 
