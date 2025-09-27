@@ -21,8 +21,11 @@ enum win_mode {
 	MODE_NUMLOCK     = 1 << 17,
 	MODE_MOUSE       = MODE_MOUSEBTN|MODE_MOUSEMOTION|MODE_MOUSEX10\
 	                  |MODE_MOUSEMANY,
+	MODE_KBDSELECT   = 1 << 18,
 };
 
+void toggle_winmode(int);
+void keyboard_select(const Arg *);
 void xbell(void);
 void xclipcopy(void);
 void xdrawcursor(int, int, Glyph, int, int, Glyph);
