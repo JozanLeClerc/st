@@ -1,54 +1,34 @@
 st - simple terminal
-====================
+--------------------
+st is a simple terminal emulator for X which sucks less.
 
-Introduction
+
+Requirements
 ------------
-This is my personnal build of st, a simple terminal emulator for X
-which sucks less. I've applied some patches.
+In order to build st you need the Xlib header files.
 
-Depedencies
------------
-  - A C compiler
-  - xorg
-  - make
 
 Installation
 ------------
-To install this build, run these commands:
+Edit config.mk to match your local setup (st is installed into
+the /usr/local namespace by default).
 
-  $ git clone git://jozanleclerc.xyz/jozan/st.git
-  $ cd st
-  $ make
-  # make install clean
+Afterwards enter the following command to build and install st (if
+necessary as root):
 
-It is installed by default in the user /usr/local/bin directory but you can
-change it to something that matches more your $PATH by editing the PREFIX
-variable in config.mk.
+    make clean install
 
-Applied patches
----------------
-You can find a list of patches and check what those I've applied are
-doing on st's patches page.
 
-Here is my list:
-  - anygeometry
-  - bold is not bright
-  - clipboard
-  - externalpipe
-  - hidecursor
-  - keyboard select
-  - scrollback
+Running st
+----------
+If you did not install st with make clean install, you must compile
+the st terminfo entry with the following command:
 
-Settings
---------
-Most settings are done by editing config.h and recompiling.
+    tic -sx st.info
 
- Fonts
- -----
- The default font is part of the Nerd Fonts collection but can
- be changed in config.h:19.
+See the man page for additional details.
 
- Colors
- ------
- The colorscheme used in this build is gruvbox dark hard, you can
- change it at config.h:110.
+Credits
+-------
+Based on Aurélien APTEL <aurelien dot aptel at gmail dot com> bt source code.
+

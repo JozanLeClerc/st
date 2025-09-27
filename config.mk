@@ -1,5 +1,5 @@
 # st version
-VERSION = 0.8.4
+VERSION = 0.9.3
 
 # Customize below to fit your system
 
@@ -21,7 +21,6 @@ LIBS = -L$(X11LIB) -lm -lrt -lX11 -lutil -lXft \
        `$(PKG_CONFIG) --libs freetype2`
 
 # flags
-CFLAGS	= -std=c99 -march=haswell -Os -pipe
 STCPPFLAGS = -DVERSION=\"$(VERSION)\" -D_XOPEN_SOURCE=600
 STCFLAGS = $(INCS) $(STCPPFLAGS) $(CPPFLAGS) $(CFLAGS)
 STLDFLAGS = $(LIBS) $(LDFLAGS)
@@ -31,6 +30,7 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
 #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
 #       `$(PKG_CONFIG) --libs fontconfig` \
 #       `$(PKG_CONFIG) --libs freetype2`
+#MANPREFIX = ${PREFIX}/man
 
 # compiler and linker
-CC = cc
+# CC = c99
