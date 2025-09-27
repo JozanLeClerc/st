@@ -185,15 +185,15 @@ static MouseShortcut mshortcuts[] = {
 	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} }, */
 };
 
-/* Internal keyboard shortcuts. */
-#define MODKEY Mod1Mask
-#define TERMMOD (ControlMask|ShiftMask)
-
-static char *linkviewcmd[] = { "/bin/sh", "-c",
+static char *linkviewcmd[] = { "/usr/bin/zsh", "-ic",
     "st -e linkview $(tmp=$(xurls | uniq); IFS=; [ ! -z $tmp ] && echo $tmp | dmenu -i -l 20 -m 0 | tr -d '\n' | cat)",
     "externalpipe", NULL };
 static char *cpyoutcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpyout", "externalpipe", NULL };
 static char *cpyoutnopcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpyout noprompt", "externalpipe", NULL };
+
+/* Internal keyboard shortcuts. */
+#define MODKEY Mod1Mask
+#define TERMMOD (ControlMask|ShiftMask)
 
 static Shortcut shortcuts[] = {
 	/* mask                 keysym          function        argument */
