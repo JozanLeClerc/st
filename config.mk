@@ -20,8 +20,13 @@ LIBS = -L$(X11LIB) -lm -lrt -lX11 -lutil -lXft \
        `$(PKG_CONFIG) --libs fontconfig` \
        `$(PKG_CONFIG) --libs freetype2`
 
+HOSTNAME = $(shell /usr/bin/hostname -s)
+
 # flags
+CFLAGS	= -march=alderlake -Os -pipe
+ifeq (${HOSTNAME}, mother)
 CFLAGS	= -march=haswell -Os -pipe
+endif
 STCPPFLAGS = -DVERSION=\"$(VERSION)\" -D_XOPEN_SOURCE=600
 STCFLAGS = $(INCS) $(STCPPFLAGS) $(CPPFLAGS) $(CFLAGS)
 STLDFLAGS = $(LIBS) $(LDFLAGS)
