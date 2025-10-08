@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# Using external pipe with st, give a dmenu prompt of recent commands,
+# allowing the user to copy the command lines inputed
+# xclip required for this script.
+# By joe, adapted from st-cpyout by Jaywalker and Luke
+
+# mem=$(sed 's/^ $//g' | sed 's/\x0//g')
+mem=$(cat /tmp/out)
+ps1=$(printf "%s" "$mem" |
+	tail -n1 |
+	sed -E 's/([%,#,>,$]).*/\1/')
+chosen=$(printf "%s" "$mem" |
+	grep -F "$ps1" |
+	sed '$ d' |
+	tac |
+	dmenu -i -l 10 -m 0)
+if [ -n "$chosen" ]; then
+	cmd=$(printf "%s" "$chosen" | sed "s/^$ps1 //")
+	printf "%s" "$cmd" | xclip -selection clipboard
+	herbe "  clipped : $(printf "%.10s..." "$cmd")" &
+fi
+return
+# if [ "$1" = "noprompt" ]; then
+# 	printf "%s" "$mem" |
+# 		gawk "/^$chosen$/{p=1;print;next} p&&/$eps1/{p=0};p" |
+# 		tac |
+# 		sed '$ d' |
+# 		tac |
+# 		perl -p -e 'chomp if eof' |
+# 		xclip -selection clipboard
+# else
+# 	printf "%s" "$mem" |
+# 		gawk "/^$chosen$/{p=1;print;next} p&&/$eps1/{p=0};p" |
+# 		xclip -selection clipboard
+# fi

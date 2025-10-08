@@ -188,6 +188,7 @@ static MouseShortcut mshortcuts[] = {
 static char *linkviewcmd[] = { "/usr/bin/zsh", "-ic",
     "linkview $(tmp=$(xurls | uniq | sed 's/\\[[0-9].*\\]//'); IFS=; [ ! -z $tmp ] && echo $tmp | dmenu -i -l 20 | tr -d '\n' | cat) --dmenu",
     "externalpipe", NULL };
+static char *cpycmdcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpycmd", "externalpipe", NULL };
 static char *cpyoutcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpyout", "externalpipe", NULL };
 static char *cpyoutnopcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpyout noprompt", "externalpipe", NULL };
 
@@ -219,6 +220,7 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_I,           externalpipe,   {.v =  linkviewcmd } },
 	{ TERMMOD,              XK_P,           externalpipe,   {.v =  cpyoutcmd} },
 	{ TERMMOD,              XK_O,           externalpipe,   {.v =  cpyoutnopcmd} },
+	{ TERMMOD,              XK_L,           externalpipe,   {.v =  cpycmdcmd} },
 };
 
 /*

@@ -37,6 +37,7 @@ dist: clean
 install: st
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp -f st $(DESTDIR)$(PREFIX)/bin
+	cp -f st-cpycmd $(DESTDIR)$(PREFIX)/bin
 	cp -f st-cpyout $(DESTDIR)$(PREFIX)/bin
 	cp -f st-links $(DESTDIR)$(PREFIX)/bin
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/st
