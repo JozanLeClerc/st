@@ -5,28 +5,28 @@
 # xclip required for this script.
 # By Jaywalker and Luke
 # Adapted for FreeBSD by Joe
-mem=$(sed 's/^ $//g' | sed 's/\x0//g')
+mem=$(sed '{s/^ $//g;s/\x0//g;}')
 ps1=$(printf "%s" "$mem" |
 	tail -n1 |
 	sed -E 's/([%,#,>]).*/\1/')
 chosen=$(printf "%s" "$mem" |
 	grep -F "$ps1" |
-	sed '$ d' |
+	grep -v "$ps1 $" |
 	tac |
-	dmenu -i -l 10 -m 0 |
+	dmenu -i -l 10 |
 	sed 's/[^^]/[&]/g; s/\^/\\^/g')
 eps1=$(echo "$ps1" |
 	sed 's/[^^]/[&]/g; s/\^/\\^/g')
 if [ "$1" = "noprompt" ]; then
 	printf "%s" "$mem" |
 		gawk "/^$chosen$/{p=1;print;next} p&&/$eps1/{p=0};p" |
-		tac |
-		sed '$ d' |
-		tac |
-		perl -p -e 'chomp if eof' |
+		sed '{1d;s/ $//;}' |
+		head -c -1 |
 		xclip -selection clipboard
 else
 	printf "%s" "$mem" |
 		gawk "/^$chosen$/{p=1;print;next} p&&/$eps1/{p=0};p" |
+		sed 's/ $//' |
+		head -c -1 |
 		xclip -selection clipboard
 fi

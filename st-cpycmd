@@ -9,11 +9,15 @@ mem=$(sed '{s/^ $//g;s/\x0//g;}')
 ps1=$(printf "%s" "$mem" |
 	tail -n1 |
 	sed -E 's/([%,#,>,$]).*/\1/')
+printf "%s" "$mem" |
+	grep -F "$ps1" |
+	grep -v "$ps1 $" |
+return
 chosen=$(printf "%s" "$mem" |
 	grep -F "$ps1" |
-	sed '$ d' |
+	grep -v "$ps1 $" |
 	tac |
-	dmenu -i -l 10 -m 0)
+	dmenu -i -l 10)
 if [ -n "$chosen" ]; then
 	cmd=$(printf "%s" "$chosen" | sed "{s/^$ps1 //;s/ $//;}")
 	printf "%s" "$cmd" | xclip -selection clipboard
