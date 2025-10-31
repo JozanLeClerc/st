@@ -188,7 +188,7 @@ static MouseShortcut mshortcuts[] = {
 };
 
 static char *linkviewcmd[] = { "/usr/bin/zsh", "-ic",
-    "linkview $(tmp=$(xurls | uniq | sed 's/\\[[0-9].*\\]//'); IFS=; [ ! -z $tmp ] && echo $tmp | dmenu -i -l 20 | tr -d '\n' | cat) --dmenu",
+    "linkview $(tmp=$(xurls | uniq | sed 's/\\[[0-9].*\\]//' | tac); IFS=; [ ! -z $tmp ] && echo $tmp | dmenu -i -l 20 | tr -d '\n' | cat) --dmenu",
     "externalpipe", NULL };
 static char *cpycmdcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpycmd", "externalpipe", NULL };
 static char *cpyoutcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpyout", "externalpipe", NULL };
