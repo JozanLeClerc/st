@@ -39,6 +39,7 @@ install: st
 	cp -f st $(DESTDIR)$(PREFIX)/bin
 	cp -f st-cpycmd $(DESTDIR)$(PREFIX)/bin
 	cp -f st-cpyout $(DESTDIR)$(PREFIX)/bin
+	cp -f st-cpyip $(DESTDIR)$(PREFIX)/bin
 	cp -f st-links $(DESTDIR)$(PREFIX)/bin
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/st
 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1

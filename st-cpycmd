@@ -21,7 +21,7 @@ chosen=$(printf "%s" "$mem" |
 if [ -n "$chosen" ]; then
 	cmd=$(printf "%s" "$chosen" | sed "{s/^$ps1 //;s/ $//;}")
 	printf "%s" "$cmd" | xclip -selection clipboard
-	herbe=$(printf "  clipped cmd : %.10s" "$cmd")
+	herbe=$(printf "clipped cmd : %.10s" "$cmd")
 	if [ "$(printf "%s" "$cmd" | wc -c)" -gt 10 ]; then
 		herbe="${herbe}..."
 	fi
