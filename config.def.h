@@ -7,7 +7,7 @@
  */
 /* static char *font = "MonaspiceNe Nerd Font:size=12"; */
 /* static char *font = "Terminess Nerd Font:size=15"; */
-static char *font = "Terminus (TTF):size=15";
+static char *font = "Terminus (TTF):size=13";
 /* static char *font = "BlexMono Nerd Font:size=13"; */
 static int borderpx = 0;
 
