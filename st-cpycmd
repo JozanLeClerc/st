@@ -9,10 +9,6 @@ mem=$(sed '{s/^ $//g;s/\x0//g;}')
 ps1=$(printf "%s" "$mem" |
 	tail -n1 |
 	sed -E 's/([%,#,>,$]).*/\1/')
-printf "%s" "$mem" |
-	grep -F "$ps1" |
-	grep -v "$ps1 $" |
-return
 chosen=$(printf "%s" "$mem" |
 	grep -F "$ps1" |
 	grep -v "$ps1 $" |
