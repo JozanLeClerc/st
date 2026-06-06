@@ -195,7 +195,7 @@ static char *linkviewcmd[] = { "/bin/sh", "-c",
     "linkview $(tmp=$(xurls | uniq | sed 's/\\[[0-9].*\\]//' | tac); IFS=; [ ! -z $tmp ] && echo $tmp | dmenu -i -l 20 | tr -d '\n' | cat) --dmenu",
     "externalpipe", NULL };
 static char *cpyipcmd[]  = { "/bin/sh", "-c",
-	"grep -oE '\\b([0-9]{1,3}\\.){3}[0-9]{1,3}\\b' | grep -v '255' | sort | uniq | dmenu -i -l 10 -g 4 | xclip -selection clipboard",
+	"tmp=$(grep -oE '\\b([0-9]{1,3}\\.){3}[0-9]{1,3}\\b' | grep -v '255' | sort | uniq); [ -n \"$tmp\" ] && sel=$(printf \"%s\" \"$tmp\" | dmenu -i -g 8 -l 2 | xclip -r -selection clipboard); [ -n \"$sel\" ] && herbe \"clipped: $sel\" ",
 	"externalpipe", NULL };
 // static char *cpyipcmd[]  = { "/bin/sh", "-c", "/usr/local/bin/st-cpyip", "externalpipe", NULL };
 static char *cpycmdcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpycmd", "externalpipe", NULL };
