@@ -191,10 +191,13 @@ static MouseShortcut mshortcuts[] = {
 	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} }, */
 };
 
-static char *linkviewcmd[] = { "/usr/bin/zsh", "-ic",
+static char *linkviewcmd[] = { "/bin/sh", "-c",
     "linkview $(tmp=$(xurls | uniq | sed 's/\\[[0-9].*\\]//' | tac); IFS=; [ ! -z $tmp ] && echo $tmp | dmenu -i -l 20 | tr -d '\n' | cat) --dmenu",
     "externalpipe", NULL };
-static char *cpyipcmd[]  = { "/bin/sh", "-c", "/usr/local/bin/st-cpyip", "externalpipe", NULL };
+static char *cpyipcmd[]  = { "/bin/sh", "-c",
+	"grep -oE '\\b([0-9]{1,3}\\.){3}[0-9]{1,3}\\b' | grep -v '255' | sort | uniq | dmenu -i -l 10 -g 4 | xclip -selection clipboard",
+	"externalpipe", NULL };
+// static char *cpyipcmd[]  = { "/bin/sh", "-c", "/usr/local/bin/st-cpyip", "externalpipe", NULL };
 static char *cpycmdcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpycmd", "externalpipe", NULL };
 static char *cpyoutcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpyout", "externalpipe", NULL };
 static char *cpyoutnopcmd[] = { "/bin/sh", "-c", "/usr/local/bin/st-cpyout noprompt", "externalpipe", NULL };

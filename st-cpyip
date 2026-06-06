@@ -19,7 +19,6 @@ chosen=$(printf "%s" "$mem" |
 eps1=$(echo "$ps1" |
 	sed 's/[^^]/[&]/g; s/\^/\\^/g')
 
-echo "-------------" >>/tmp/debug
 printf "%s" "$(printf "%s" "$mem" |
 		gawk "/^$chosen$/{p=1;print;next} p&&/$eps1/{p=0};p" |
 		sed 's/ $//' |

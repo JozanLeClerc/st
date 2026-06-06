@@ -129,3 +129,4 @@ config.h
 .ccls*
 st
 compile_flags.txt
+compile_commands.json
